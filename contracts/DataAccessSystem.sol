@@ -16,15 +16,8 @@ contract DataAccessSystem {
         address payable organization;
     }
 
-    struct AccessRequest {
-        address requester;
-        uint256 amountPaid;
-        bool approved;
-    }
-
     mapping(uint256 => Dataset) public datasets;
     mapping(address => mapping(uint256 => uint256)) public accessExpiry; // user's access expiry for dataset
-    mapping(uint256 => AccessRequest[]) public accessRequests; // datasetId => array of requests
 
     uint256 public datasetCount;
 
@@ -80,56 +73,31 @@ contract DataAccessSystem {
         emit DatasetAdded(datasetCount, name, pricePerDay, msg.sender);
     }
 
-    // User requests access
+    // User requests access and gets access immediately after payment
     function requestAccess(uint256 datasetId) public payable {
         Dataset memory dataset = datasets[datasetId];
         require(dataset.organization != address(0), "Dataset does not exist");
         require(msg.value >= dataset.pricePerDay, "Insufficient payment");
 
-        accessRequests[datasetId].push(
-            AccessRequest({
-                requester: msg.sender,
-                amountPaid: msg.value,
-                approved: false
-            })
-        );
+        // Calculate fee and distribute funds
+        uint256 systemFee = (msg.value * systemFeePercentage) / 100;
+        uint256 orgShare = msg.value - systemFee;
 
+        // Transfer funds
+        payable(owner).transfer(systemFee);
+        dataset.organization.transfer(orgShare);
+
+        // Grant access
+        uint256 daysPaid = msg.value / dataset.pricePerDay;
+        uint256 expiryTime = block.timestamp + (daysPaid * 1 days);
+        accessExpiry[msg.sender][datasetId] = expiryTime;
+
+        // Emit events
         emit AccessRequested(msg.sender, datasetId, msg.value);
+        emit AccessGranted(msg.sender, datasetId, expiryTime);
     }
 
-    // Organization approves access request
-    function approveAccess(
-        uint256 datasetId,
-        address requester
-    ) public onlyOrganization {
-        Dataset memory dataset = datasets[datasetId];
-        require(dataset.organization == msg.sender, "Not the dataset owner");
-
-        AccessRequest[] storage requests = accessRequests[datasetId];
-        for (uint256 i = 0; i < requests.length; i++) {
-            if (requests[i].requester == requester && !requests[i].approved) {
-                requests[i].approved = true;
-
-                // Calculate fee and distribute funds
-                uint256 systemFee = (requests[i].amountPaid *
-                    systemFeePercentage) / 100;
-                uint256 orgShare = requests[i].amountPaid - systemFee;
-
-                payable(owner).transfer(systemFee);
-                dataset.organization.transfer(orgShare);
-
-                // Grant access
-                uint256 daysPaid = requests[i].amountPaid / dataset.pricePerDay;
-                uint256 expiryTime = block.timestamp + (daysPaid * 1 days);
-                accessExpiry[requester][datasetId] = expiryTime;
-
-                emit AccessGranted(requester, datasetId, expiryTime);
-                break;
-            }
-        }
-    }
-
-    // Check access
+    // Check if the user has access to the dataset
     function hasAccess(
         address user,
         uint256 datasetId
@@ -137,7 +105,7 @@ contract DataAccessSystem {
         return block.timestamp < accessExpiry[user][datasetId];
     }
 
-    // Get metadata
+    // Get dataset metadata
     function getMetadata(
         uint256 datasetId
     ) public view returns (string memory, string memory, uint256, address) {
@@ -148,14 +116,5 @@ contract DataAccessSystem {
             dataset.pricePerDay,
             dataset.organization
         );
-    }
-
-    // Get access requests for a dataset (organization only)
-    function getAccessRequests(
-        uint256 datasetId
-    ) public view onlyOrganization returns (AccessRequest[] memory) {
-        Dataset memory dataset = datasets[datasetId];
-        require(dataset.organization == msg.sender, "Not the dataset owner");
-        return accessRequests[datasetId];
     }
 }

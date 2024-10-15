@@ -1,6 +1,6 @@
 import web3 from '../src/utils/web3';
 
-const address = '0x34eaef4e97c55deefddb2c91d3eeafd392bb7c7e';
+const address = '0x626cb9ccf7cc3bf791e5f7611c00c5a84e7cd136';
 const abi = [
 	{
 		"inputs": [
@@ -69,47 +69,6 @@ const abi = [
 		"type": "event"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "url",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "pricePerDay",
-				"type": "uint256"
-			}
-		],
-		"name": "addDataset",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "datasetId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "address",
-				"name": "requester",
-				"type": "address"
-			}
-		],
-		"name": "approveAccess",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -143,19 +102,6 @@ const abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "datasetId",
-				"type": "uint256"
-			}
-		],
-		"name": "requestAccess",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
@@ -180,35 +126,24 @@ const abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "url",
+				"type": "string"
 			},
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "pricePerDay",
 				"type": "uint256"
 			}
 		],
-		"name": "accessRequests",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "requester",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "amountPaid",
-				"type": "uint256"
-			},
-			{
-				"internalType": "bool",
-				"name": "approved",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
+		"name": "addDataset",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -253,42 +188,6 @@ const abi = [
 				"internalType": "address payable",
 				"name": "organization",
 				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "datasetId",
-				"type": "uint256"
-			}
-		],
-		"name": "getAccessRequests",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "requester",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amountPaid",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "approved",
-						"type": "bool"
-					}
-				],
-				"internalType": "struct DataAccessSystem.AccessRequest[]",
-				"name": "",
-				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -376,6 +275,19 @@ const abi = [
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "datasetId",
+				"type": "uint256"
+			}
+		],
+		"name": "requestAccess",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
